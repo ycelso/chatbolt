@@ -15,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from '@/context/theme-provider';
 import { cn, triggerHapticFeedback } from "@/lib/utils";
 import LoadingScreen from '@/components/common/loading-screen';
-import { transcribeAudio } from '@/ai/flows/transcribe-audio-flow';
 
 export interface ChatHistoryEntry {
   sessionId: string;
@@ -332,29 +331,13 @@ export default function ChatInterface() {
     ]);
 
     try {
-      const {transcribedText} = await transcribeAudio({audioDataUri});
-      if (!transcribedText) {
-        throw new Error('La transcripción de audio no devolvió texto.');
-      }
-      
-      setMessages(prev => prev.map(m => m.id === typingMessageId ? {...m, text: 'Bot está pensando...'} : m));
-
-      const response = await fetchChatResponse({message: transcribedText});
-
-      setMessages(prev => prev.filter(m => m.id !== typingMessageId));
-
-      if (!response || !response.response) {
-        throw new Error('La IA no generó una respuesta.');
-      }
-
-      const botMessage: Message = {
-        id: crypto.randomUUID(),
-        text: response.response,
-        sender: 'bot',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, botMessage]);
-      speakMessage(response.response);
+      // Aquí deberías hacer una petición HTTP a un endpoint serverless para transcribir el audio
+      // Por ejemplo:
+      // const res = await fetch('https://chatbolt.vercel.app/api/transcribe', { ... });
+      // const { transcribedText } = await res.json();
+      // Y luego continuar igual que antes
+      // Por ahora, muestra un error para que no falle el build
+      throw new Error('La transcripción de audio no está disponible en el frontend estático.');
 
     } catch (error) {
       console.error('Error processing voice message:', error);
